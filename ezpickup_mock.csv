@@ -1,0 +1,5 @@
+order_number,order_status,payment_method,shipping_courier,shipping_awb,shipping_receiver,shipping_receiver_phone,total_cost,warehouse,diinput_oleh,kecamatan,kota,provinsi,items
+EZ-IMP-001,DELIVERED,COD,jnt,JO0012345,John Doe,628111222333,150000,EZ Bekasi,CS Dian,Bekasi Barat,Bekasi,Jawa Barat,Krim Wajah Anti Aging x1
+EZ-IMP-002,SHIPPING,NON_COD,spx_std,SPX12345,Jane Smith,628999888777,200000,EZ Kuningan,Ziya,Kebayoran Baru,Jakarta Selatan,DKI Jakarta,Sampo uban CNL x2
+EZ-IMP-003,CANCELLED,COD,jnt,JO0054321,Bob,628123123123,100000,EZ Makassar,Shinju,Panakkukang,Makassar,Sulawesi Selatan,Sampo uban CNL x1
+EZ-IMP-004,RETURNED,COD,AnterAja,AN998877,Alice,628000111222,250000,EZ Bekasi,CS Budi,Kelapa Gading,Jakarta Utara,DKI Jakarta,Cream collagen anti penuaan x3

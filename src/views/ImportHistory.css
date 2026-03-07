@@ -1,0 +1,393 @@
+.import-history-view {
+    padding: 24px 32px;
+    height: 100%;
+    overflow-y: auto;
+    background-color: var(--color-background);
+}
+
+.import-history-view .page-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.import-history-view .header-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.import-history-view .header-icon-wrapper.blue {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--color-primary);
+}
+
+.import-history-view .full-width-card {
+    background-color: var(--color-surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.import-history-view .card-header {
+    padding: 20px 24px;
+    border-bottom-color: var(--border-color);
+}
+
+.import-history-view .history-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.import-history-view .history-item {
+    border-bottom-color: var(--border-color);
+}
+
+/* Empty State */
+.import-history-view .empty-state {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.import-history-view .empty-icon {
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+}
+
+.import-history-view .empty-title {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.import-history-view .empty-desc {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+/* History List & Items */
+.import-history-view .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color var(--transition-fast);
+}
+
+.import-history-view .history-item:last-child {
+    border-bottom: none;
+}
+
+.import-history-view .history-item:hover {
+    background-color: var(--color-bg-body);
+}
+
+.import-history-view .history-item-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.import-history-view .history-icon-box {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--color-primary);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.import-history-view .history-item-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.import-history-view .badge-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.import-history-view .history-item-date {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+/* Red Cancel Button */
+.import-history-view .cancel-import-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    pointer-events: auto;
+    position: relative;
+    z-index: 10;
+}
+
+.import-history-view .cancel-import-btn:hover {
+    background-color: #b91c1c;
+    /* darker red */
+    border-color: #b91c1c;
+    box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2), 0 2px 4px -1px rgba(220, 38, 38, 0.1);
+}
+
+/* Custom Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-container {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    max-width: 28rem;
+    width: 100%;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: slideUpFade 0.3s ease-out;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-header-flex {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.modal-icon-wrapper {
+    flex-shrink: 0;
+    padding: 0.75rem;
+    background-color: rgba(220, 38, 38, 0.1);
+    color: var(--color-danger);
+    border-radius: 9999px;
+}
+
+.modal-text-content {
+    padding-top: 0.25rem;
+}
+
+.modal-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #111827;
+    /* Gray 900 explicitly */
+    margin-bottom: 0.5rem;
+}
+
+.modal-desc {
+    color: #4b5563;
+    /* Gray 600 explicitly */
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    background-color: #f9fafb;
+    /* Gray 50 */
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.btn-cancel {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    /* Gray 700 */
+    background: transparent;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.btn-cancel:hover {
+    background-color: #e5e7eb;
+    color: #111827;
+}
+
+.btn-danger {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-danger:hover {
+    background-color: #b91c1c;
+    /* darker red */
+    border-color: #b91c1c;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Info Banner */
+.import-history-view .info-banner {
+    margin-top: 1.5rem;
+    background-color: rgba(37, 99, 235, 0.05);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    color: #1e40af;
+    /* dark blue */
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.import-history-view .info-icon {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+/* Canceled State Styles */
+.import-history-view .history-item.canceled {
+    opacity: 0.6;
+    background-color: var(--color-bg-body);
+}
+
+.import-history-view .history-item.canceled .history-icon-box {
+    filter: grayscale(100%);
+    opacity: 0.5;
+}
+
+.import-history-view .history-item.canceled .badge-count {
+    background-color: rgba(156, 163, 175, 0.2);
+    color: #4b5563;
+    text-decoration: line-through;
+}
+
+.badge-canceled {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.125rem 0.6rem;
+    border-radius: 9999px;
+    background-color: rgba(220, 38, 38, 0.1);
+    color: var(--color-danger);
+    margin-left: 0.5rem;
+    display: inline-block;
+}
+
+/* Dark mode adjustments */
+.dark .import-history-view .history-item:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.dark .import-history-view .info-banner {
+    background-color: rgba(37, 99, 235, 0.1);
+    border-color: rgba(37, 99, 235, 0.3);
+    color: #93c5fd;
+    /* light blue */
+}
+
+.dark .import-history-view .header-icon-wrapper.blue {
+    background-color: rgba(37, 99, 235, 0.2);
+}
+
+.dark .modal-icon-wrapper {
+    background-color: rgba(220, 38, 38, 0.2);
+    color: #f87171;
+    /* lighter red */
+}
+
+/* Modal Dark Mode Overrides */
+.dark .modal-container {
+    background-color: #1f2937;
+    /* Solid Dark Gray */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.dark .modal-title {
+    color: #f9fafb;
+}
+
+.dark .modal-desc {
+    color: #d1d5db;
+}
+
+.dark .modal-footer {
+    background-color: #111827;
+    /* Darker Gray */
+    border-top-color: #374151;
+}
+
+.dark .btn-cancel {
+    color: #e5e7eb;
+}
+
+.dark .btn-cancel:hover {
+    background-color: #374151;
+}

@@ -1,0 +1,287 @@
+.um-controls {
+    margin-bottom: 24px;
+    display: flex;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.search-bar .search-icon {
+    color: var(--text-tertiary);
+    margin-right: 8px;
+}
+
+.search-bar input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 14px;
+    color: var(--text-primary);
+    outline: none;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.user-table th {
+    background-color: var(--surface-hover);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.u-avatar {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.u-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.u-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.u-id {
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+.u-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.role-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.role-badge.superadmin {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.role-badge.staff {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.u-permissions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.perm-tag {
+    background-color: var(--surface-hover);
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+}
+
+.perm-tag.all-access {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+.btn-icon.delete {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.btn-icon.delete:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Modal Stying */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+}
+
+.modal-content {
+    background-color: var(--color-bg-card, #FFFFFF);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg, 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1));
+    width: 100%;
+    position: relative;
+    border: 1px solid var(--border);
+}
+
+.dark .modal-content {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header h3 {
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+    font-size: 20px;
+}
+
+.modal-header p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 14px;
+}
+
+.um-modal {
+    max-width: 600px;
+    padding: 32px;
+}
+
+.um-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+    margin-top: 16px;
+}
+
+.um-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.um-input-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.um-input-group input {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background-color: var(--background);
+    color: var(--text-primary);
+}
+
+.um-permissions-section {
+    background-color: var(--surface-hover);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+}
+
+.um-permissions-section h4 {
+    margin: 0 0 4px 0;
+    color: var(--text-primary);
+}
+
+.um-permissions-section .subtext {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 16px 0;
+}
+
+.perm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.perm-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.perm-checkbox:hover {
+    border-color: var(--color-success);
+}
+
+.perm-checkbox.selected {
+    background-color: var(--color-success-bg);
+    border-color: var(--color-success);
+}
+
+.perm-checkbox input {
+    display: none;
+}
+
+.perm-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.check-icon {
+    color: var(--text-tertiary);
+}
+
+.check-icon.active {
+    color: var(--color-success);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 32px;
+}

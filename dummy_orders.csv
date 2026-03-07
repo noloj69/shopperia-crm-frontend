@@ -1,0 +1,4 @@
+OrderID,CustomerName,Phone,Address,PaymentMethod,Courier,AWB,TotalAmount,Status Category,Tracking Status Detail
+ORD-901,Agus Setiawan,08122334455,Jl. Mawar No. 4 Bandung,COD,J&T,JT100200300,150000,Aman,Out for Delivery
+ORD-902,Budi Anduk,08998877665,Perumahan Anggrek Blok C Jakarta,Non-COD,JNE,JNE200300400,250000,Peringatan,Stuck > 48 hours
+ORD-903,Citra Kirana,08776655443,Apartemen Melati Lt 5 Surabaya,COD,SiCepat,SC300400500,85000,Kritis,Alamat tidak ditemukan

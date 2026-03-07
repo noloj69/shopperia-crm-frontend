@@ -1,0 +1,197 @@
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background);
+    background-image: radial-gradient(var(--border) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+.login-card {
+    background-color: var(--surface);
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 20px 48px rgba(0, 0, 0, 0.05), inset 0 0 0 1px var(--border);
+    padding: 40px;
+    animation: slideUpFade 0.5s ease-out;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-brand-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto 24px;
+}
+
+.logo-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: white;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
+}
+
+.logo-text {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+.login-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+}
+
+.login-header p.login-slogan {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    font-style: italic;
+    font-weight: 500;
+    margin: 0;
+    padding: 0 10px;
+    position: relative;
+}
+
+.login-header p.login-slogan::before {
+    content: "✨";
+    display: block;
+    font-style: normal;
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.input-group input {
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background-color: var(--surface);
+    color: var(--text-primary);
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.login-submit-btn {
+    background-color: #2563eb;
+    /* Strong solid blue */
+    color: #ffffff;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.login-submit-btn:hover {
+    background-color: #1d4ed8;
+    /* Darker blue on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
+}
+
+.login-submit-btn:active {
+    transform: translateY(0);
+}
+
+.login-error-alert {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.login-footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    background-color: var(--surface-hover);
+    padding: 12px;
+    border-radius: 8px;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dark Mode Overrides */
+.dark .login-card {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 0 20px 48px rgba(0, 0, 0, 0.2), inset 0 0 0 1px var(--border);
+}
+
+.dark .logo-icon {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.dark .logo-text {
+    background: linear-gradient(135deg, #f8fafc, #cbd5e1);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dark .input-group input {
+    background-color: rgba(0, 0, 0, 0.2);
+}
