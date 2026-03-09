@@ -80,7 +80,7 @@ const TrackingModal = ({ isOpen, onClose, awb, courier, trackingData, isLoading,
     );
 };
 
-const OrderTableRow = ({ order }) => {
+const OrderTableRow = ({ order, isSelected, onToggle }) => {
     const { updateOrderStatus, updateOrderCourierPhone, deleteOrder, waTemplates, mockFetchTracking } = useData();
     const [copied, setCopied] = useState(false);
     const [courierPhone, setCourierPhone] = useState(order.courierInfo.kurirPhone || '');
@@ -133,7 +133,7 @@ const OrderTableRow = ({ order }) => {
     return (
         <div className="table-row">
             <div className="td td-checkbox">
-                <input type="checkbox" className="row-checkbox" />
+                <input type="checkbox" className="row-checkbox" checked={isSelected} onChange={onToggle} />
             </div>
 
             <div className="td td-id">
@@ -307,7 +307,9 @@ const OrderTableRow = ({ order }) => {
 };
 
 const OrderListTable = ({ orders, title, subtitle }) => {
+    const { bulkDeleteOrders } = useData();
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedIds, setSelectedIds] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [monFilter, setMonFilter] = useState('');
@@ -381,6 +383,33 @@ const OrderListTable = ({ orders, title, subtitle }) => {
 
     const handlePrev = () => setCurrentPage(p => Math.max(1, p - 1));
     const handleNext = () => setCurrentPage(p => Math.min(totalPages, p + 1));
+
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            // Select all current page orders
+            const currentPageIds = currentOrders.map(o => o.id);
+            setSelectedIds(prev => {
+                const newSelection = new Set([...prev, ...currentPageIds]);
+                return Array.from(newSelection);
+            });
+        } else {
+            // Deselect all current page orders
+            const currentPageIds = currentOrders.map(o => o.id);
+            setSelectedIds(prev => prev.filter(id => !currentPageIds.includes(id)));
+        }
+    };
+
+    const handleBulkDelete = () => {
+        if (window.confirm(`Yakin ingin menghapus ${selectedIds.length} order yang dipilih?`)) {
+            const selectedDbIds = orders
+                .filter(o => selectedIds.includes(o.id))
+                .map(o => o.db_id);
+            if (bulkDeleteOrders) {
+                bulkDeleteOrders(selectedDbIds, selectedIds);
+            }
+            setSelectedIds([]);
+        }
+    };
 
     return (
         <div className="table-container">
@@ -464,11 +493,26 @@ const OrderListTable = ({ orders, title, subtitle }) => {
                     />
                     <button className="search-btn"><Search size={14} color="white" /></button>
                 </div>
+                {selectedIds.length > 0 && (
+                    <button
+                        className="btn btn-outline"
+                        onClick={handleBulkDelete}
+                        style={{ color: '#EF4444', borderColor: '#EF4444', display: 'flex', alignItems: 'center', gap: '8px', padding: '0.4rem 0.8rem' }}
+                    >
+                        <Trash2 size={16} /> Hapus {selectedIds.length}
+                    </button>
+                )}
             </div>
 
             <div className="data-table">
                 <div className="table-header">
-                    <div className="th th-checkbox"><input type="checkbox" /></div>
+                    <div className="th th-checkbox">
+                        <input
+                            type="checkbox"
+                            onChange={handleSelectAll}
+                            checked={currentOrders.length > 0 && currentOrders.every(o => selectedIds.includes(o.id))}
+                        />
+                    </div>
                     <div className="th th-id">ID Pesanan</div>
                     <div className="th th-customer">Penerima</div>
                     <div className="th th-product">Produk</div>
@@ -483,7 +527,18 @@ const OrderListTable = ({ orders, title, subtitle }) => {
 
                 <div className="table-body">
                     {currentOrders.length > 0 ? (
-                        currentOrders.map(order => <OrderTableRow key={order.id} order={order} />)
+                        currentOrders.map(order => (
+                            <OrderTableRow
+                                key={order.id}
+                                order={order}
+                                isSelected={selectedIds.includes(order.id)}
+                                onToggle={() => {
+                                    setSelectedIds(prev => prev.includes(order.id)
+                                        ? prev.filter(id => id !== order.id)
+                                        : [...prev, order.id]);
+                                }}
+                            />
+                        ))
                     ) : (
                         <div className="empty-table-state">
                             <AlertCircle size={32} className="text-muted" />

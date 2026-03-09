@@ -183,6 +183,30 @@ export const DataProvider = ({ children }) => {
         }
     };
 
+    const bulkDeleteOrders = async (dbIds, localIds) => {
+        try {
+            // Optimistic UI deletion
+            setOrders(prevOrders => prevOrders.filter(o => !localIds.includes(o.id)));
+
+            const res = await fetch(`${API_BASE_URL}/api/orders/bulk-delete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ db_ids: dbIds })
+            });
+
+            if (!res.ok) {
+                showToast("Gagal menghapus order masal dari server.");
+            } else {
+                showToast(`${localIds.length} order berhasil dihapus.`);
+            }
+            return res.ok;
+        } catch (error) {
+            console.error("Error bulk deleting orders:", error);
+            showToast("Terjadi kesalahan jaringan.");
+            return false;
+        }
+    };
+
     const updateOrderCourierPhone = async (orderId, newPhone) => {
         try {
             const order = orders.find(o => o.id === orderId);
@@ -440,7 +464,7 @@ export const DataProvider = ({ children }) => {
         <DataContext.Provider value={{
             currentUser, login, logout, users, addUser, deleteUser, editUser,
             orders: accessibleOrders, globalOrders: orders, setOrders,
-            simulateWebhook, updateOrderStatus, updateOrderCourierPhone, deleteOrder, importOrdersFromExcel,
+            simulateWebhook, updateOrderStatus, updateOrderCourierPhone, deleteOrder, bulkDeleteOrders, importOrdersFromExcel,
             importSessions, undoImport,
             waTemplates, updateWaTemplate,
             isDarkMode, toggleDarkMode, toastMessage, showToast, mockFetchTracking
