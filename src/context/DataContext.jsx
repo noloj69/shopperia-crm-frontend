@@ -8,7 +8,10 @@ const DataContext = createContext();
 export const DataProvider = ({ children }) => {
     // State
     const [users, setUsers] = useState([]);
-    const [currentUser, setCurrentUser] = useState(null);
+    const [currentUser, setCurrentUser] = useState(() => {
+        const savedUser = localStorage.getItem('shopperia_user');
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
     const [orders, setOrders] = useState([]);
     const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
     const [importSessions, setImportSessions] = useState([]);
@@ -83,6 +86,7 @@ export const DataProvider = ({ children }) => {
 
             if (res.ok && data.success) {
                 setCurrentUser(data.user);
+                localStorage.setItem('shopperia_user', JSON.stringify(data.user));
                 return true;
             }
             return false;
@@ -94,6 +98,7 @@ export const DataProvider = ({ children }) => {
 
     const logout = () => {
         setCurrentUser(null);
+        localStorage.removeItem('shopperia_user');
     };
 
     const toggleDarkMode = () => setIsDarkMode(prev => !prev);

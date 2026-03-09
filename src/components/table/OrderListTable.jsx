@@ -85,7 +85,9 @@ const OrderTableRow = ({ order }) => {
     const [copied, setCopied] = useState(false);
     const [courierPhone, setCourierPhone] = useState(order.courierInfo.kurirPhone || '');
     const [isEditingPhone, setIsEditingPhone] = useState(false);
-    const [isFollowedUp, setIsFollowedUp] = useState(false);
+    const [isFollowedUp, setIsFollowedUp] = useState(() => {
+        return localStorage.getItem(`followed_up_${order.id}`) === 'true';
+    });
     const [isTrackingOpen, setIsTrackingOpen] = useState(false);
     const [trackingData, setTrackingData] = useState([]);
     const [isTrackingLoading, setIsTrackingLoading] = useState(false);
@@ -229,7 +231,10 @@ const OrderTableRow = ({ order }) => {
                     target="_blank"
                     rel="noreferrer"
                     className={`btn-followup ${isFollowedUp ? 'followed' : ''}`}
-                    onClick={() => setIsFollowedUp(true)}
+                    onClick={() => {
+                        setIsFollowedUp(true);
+                        localStorage.setItem(`followed_up_${order.id}`, 'true');
+                    }}
                     title="Kirim pesan WhatsApp sbg Follow Up"
                 >
                     FOLLOW UP
