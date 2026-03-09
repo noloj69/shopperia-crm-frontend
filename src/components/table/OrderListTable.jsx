@@ -319,7 +319,7 @@ const OrderListTable = ({ orders, title, subtitle }) => {
     const [customEndDate, setCustomEndDate] = useState('');
     const [csFilter, setCsFilter] = useState('');
 
-    const itemsPerPage = 25;
+    const [itemsPerPage, setItemsPerPage] = useState(25);
 
     // Extract unique CS Names
     const uniqueCS = Array.from(new Set(orders.map(o => o.csToken))).sort();
@@ -548,14 +548,34 @@ const OrderListTable = ({ orders, title, subtitle }) => {
                 </div>
             </div>
 
-            {totalPages > 1 && (
-                <div className="pagination">
-                    <span className="page-info">Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredOrders.length)} of {filteredOrders.length} orders</span>
-                    <div className="page-controls">
-                        <button className="btn-page" onClick={handlePrev} disabled={currentPage === 1}>Prev</button>
-                        <span className="current-page">Page {currentPage} of {totalPages}</span>
-                        <button className="btn-page" onClick={handleNext} disabled={currentPage === totalPages}>Next</button>
+            {filteredOrders.length > 0 && (
+                <div className="pagination" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                        <span className="page-info">Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredOrders.length)} of {filteredOrders.length} orders</span>
+                        <select
+                            className="filter-select"
+                            style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem' }}
+                            value={itemsPerPage}
+                            onChange={(e) => {
+                                setItemsPerPage(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}
+                        >
+                            <option value={25}>25 / halaman</option>
+                            <option value={50}>50 / halaman</option>
+                            <option value={100}>100 / halaman</option>
+                            <option value={250}>250 / halaman</option>
+                            <option value={500}>500 / halaman</option>
+                            <option value={1000}>1000 / halaman</option>
+                        </select>
                     </div>
+                    {totalPages > 1 && (
+                        <div className="page-controls">
+                            <button className="btn-page" onClick={handlePrev} disabled={currentPage === 1}>Prev</button>
+                            <span className="current-page">Page {currentPage} of {totalPages}</span>
+                            <button className="btn-page" onClick={handleNext} disabled={currentPage === totalPages}>Next</button>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
