@@ -157,6 +157,32 @@ export const DataProvider = ({ children }) => {
         }
     };
 
+    const deleteOrder = async (orderId) => {
+        try {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+
+            // Delete locally first
+            setOrders(prevOrders => prevOrders.filter(o => o.id !== orderId));
+
+            // Call API
+            const res = await fetch(`${API_BASE_URL}/api/orders/${order.db_id}`, {
+                method: 'DELETE'
+            });
+
+            if (!res.ok) {
+                showToast("Gagal menghapus order dari server.");
+            } else {
+                showToast(`Order ${orderId} berhasil dihapus.`);
+            }
+            return res.ok;
+        } catch (error) {
+            console.error("Error deleting order:", error);
+            showToast("Terjadi kesalahan jaringan.");
+            return false;
+        }
+    };
+
     const updateOrderCourierPhone = async (orderId, newPhone) => {
         try {
             const order = orders.find(o => o.id === orderId);
@@ -414,7 +440,7 @@ export const DataProvider = ({ children }) => {
         <DataContext.Provider value={{
             currentUser, login, logout, users, addUser, deleteUser, editUser,
             orders: accessibleOrders, globalOrders: orders, setOrders,
-            simulateWebhook, updateOrderStatus, updateOrderCourierPhone, importOrdersFromExcel,
+            simulateWebhook, updateOrderStatus, updateOrderCourierPhone, deleteOrder, importOrdersFromExcel,
             importSessions, undoImport,
             waTemplates, updateWaTemplate,
             isDarkMode, toggleDarkMode, toastMessage, showToast, mockFetchTracking

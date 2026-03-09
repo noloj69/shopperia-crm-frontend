@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { format, isToday, subDays, startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears } from 'date-fns';
-import { ChevronDown, MessageCircle, AlertCircle, Copy, CheckCircle, PackageCheck, PackageX, Truck, ShieldCheck, Clock, Ban, Search } from 'lucide-react';
+import { ChevronDown, MessageCircle, AlertCircle, Copy, CheckCircle, PackageCheck, PackageX, Truck, ShieldCheck, Clock, Ban, Search, Trash2 } from 'lucide-react';
 import './OrderListTable.css';
 
 import { useData } from '../../context/DataContext';
@@ -81,7 +81,7 @@ const TrackingModal = ({ isOpen, onClose, awb, courier, trackingData, isLoading,
 };
 
 const OrderTableRow = ({ order }) => {
-    const { updateOrderStatus, updateOrderCourierPhone, waTemplates, mockFetchTracking } = useData();
+    const { updateOrderStatus, updateOrderCourierPhone, deleteOrder, waTemplates, mockFetchTracking } = useData();
     const [copied, setCopied] = useState(false);
     const [courierPhone, setCourierPhone] = useState(order.courierInfo.kurirPhone || '');
     const [isEditingPhone, setIsEditingPhone] = useState(false);
@@ -279,6 +279,18 @@ const OrderTableRow = ({ order }) => {
                     <option value="Undelivery">Undelivery</option>
                     <option value="Kritis">Kritis</option>
                 </select>
+                <button
+                    onClick={() => {
+                        if (window.confirm(`Yakin ingin menghapus order ${order.id}?`)) {
+                            deleteOrder(order.id);
+                        }
+                    }}
+                    className="btn btn-outline"
+                    style={{ padding: '4px', marginTop: '2px', color: '#EF4444', borderColor: '#EF4444', width: '110px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px' }}
+                    title="Hapus Order"
+                >
+                    <Trash2 size={12} /> <span style={{ fontSize: '11px', fontWeight: 'bold' }}>Hapus</span>
+                </button>
             </div>
 
             <TrackingModal
