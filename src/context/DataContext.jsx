@@ -341,10 +341,53 @@ export const DataProvider = ({ children }) => {
         showToast(`Import dibatalkan. ${session.count} data dihapus secara lokal.`);
     };
 
-    // User Management Mocks (For simplicity without building excessive API endpoints)
-    const addUser = (newUser) => { setUsers(prev => [...prev, { ...newUser, id: `usr_${Date.now()}` }]); };
-    const deleteUser = (userId) => { setUsers(prev => prev.filter(u => u.id !== userId)); };
-    const editUser = (updatedUser) => { setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u)); };
+    // User Management (API connected)
+    const addUser = async (newUser) => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/users`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newUser)
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setUsers(prev => [...prev, data.user]);
+            } else {
+                showToast("Gagal menambahkan user.");
+            }
+        } catch (error) {
+            console.error("Error adding user:", error);
+            showToast("Terjadi kesalahan jaringan.");
+        }
+    };
+
+    const deleteUser = async (userId) => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/users/${userId}`, { method: 'DELETE' });
+            if (res.ok) {
+                setUsers(prev => prev.filter(u => u.id !== userId));
+            } else {
+                showToast("Gagal menghapus user.");
+            }
+        } catch (error) {
+            console.error("Error deleting user:", error);
+        }
+    };
+
+    const editUser = async (updatedUser) => {
+        // Optimistic UI update
+        setUsers(prev => prev.map(u => u.id === updatedUser.id ? { ...u, ...updatedUser } : u));
+        try {
+            await fetch(`${API_BASE_URL}/api/users/${updatedUser.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedUser)
+            });
+        } catch (error) {
+            console.error("Error updating user backend:", error);
+            showToast("Gagal menyimpan perubahan ke server.");
+        }
+    };
 
     const mockFetchTracking = (awb, courier, currentStatus) => {
         return new Promise((resolve) => {

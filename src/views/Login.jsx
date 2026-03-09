@@ -73,7 +73,7 @@ const Login = () => {
                 </form>
 
                 <div className="login-footer">
-                    Untuk admin, gunakan Email/No HP: <strong>admin</strong> dan password <strong>admin123</strong>.
+                    &copy; {new Date().getFullYear()} Shopperia CRM. All rights reserved.
                 </div>
             </div>
         </div>
