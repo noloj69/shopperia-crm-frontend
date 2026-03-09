@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
-import { Search, Bell, UploadCloud, Moon, Sun, CheckCircle } from 'lucide-react';
+import { Search, Bell, UploadCloud, Moon, Sun, CheckCircle, Menu, ChevronLeft } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import './Header.css';
 
-const Header = () => {
+const Header = ({ toggleSidebar, toggleMobileMenu, isSidebarCollapsed }) => {
     const { importOrdersFromExcel, isDarkMode, toggleDarkMode, toastMessage } = useData();
     const fileInputRef = useRef(null);
 
@@ -39,13 +39,22 @@ const Header = () => {
                     <span style={{ fontWeight: 500, fontSize: '14px' }}>{toastMessage}</span>
                 </div>
             )}
-            <div className="search-container">
-                <Search className="search-icon" size={18} />
-                <input
-                    type="text"
-                    placeholder="Search by Order ID, AWB, or Customer..."
-                    className="search-input"
-                />
+            <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <button className="icon-btn mobile-menu-btn" onClick={toggleMobileMenu}>
+                    <Menu size={20} />
+                </button>
+                <button className="icon-btn desktop-menu-btn" onClick={toggleSidebar}>
+                    {isSidebarCollapsed ? <Menu size={20} /> : <ChevronLeft size={20} />}
+                </button>
+
+                <div className="search-container">
+                    <Search className="search-icon" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Search by Order ID..."
+                        className="search-input"
+                    />
+                </div>
             </div>
 
             <div className="header-actions">

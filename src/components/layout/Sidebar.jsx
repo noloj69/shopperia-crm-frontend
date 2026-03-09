@@ -3,7 +3,7 @@ import { LayoutDashboard, AlertCircle, Package, MessageCircle, Trophy, History, 
 import { useData } from '../../context/DataContext';
 import './Sidebar.css';
 
-const Sidebar = ({ activeTab, setActiveTab }) => {
+const Sidebar = ({ activeTab, setActiveTab, isCollapsed, isMobileOpen }) => {
   const { logout, currentUser } = useData();
 
   const allMenuItems = [
@@ -31,7 +31,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${isMobileOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-brand">
         <div className="brand-logo">CS</div>
         <span className="brand-text">Shopperia CRM</span>

@@ -77,3 +77,44 @@
     border-radius: 50%;
     border: 2px solid var(--color-bg-sidebar);
 }
+
+@media (min-width: 769px) {
+    .mobile-menu-btn {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0 1rem;
+    }
+
+    .desktop-menu-btn {
+        display: none !important;
+    }
+
+    .search-container {
+        width: auto;
+        flex: 1;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .search-input::placeholder {
+        color: transparent;
+        /* hide placeholder on tiny screens */
+    }
+
+    .header-actions {
+        gap: 0.5rem;
+    }
+
+    /* Hide text inside import button on mobile */
+    .import-btn {
+        font-size: 0;
+        padding: 0.5rem;
+    }
+
+    .import-btn svg {
+        font-size: 16px;
+    }
+}
