@@ -105,7 +105,7 @@ const OrderTableRow = ({ order, isSelected, onToggle }) => {
     };
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(order.awb || order.id);
+        navigator.clipboard.writeText(order.courierInfo.awb);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };

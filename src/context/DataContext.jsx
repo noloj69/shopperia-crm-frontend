@@ -286,20 +286,21 @@ export const DataProvider = ({ children }) => {
                 };
 
                 const cols = {
-                    order_number: getCol('order_number'),
+                    order_number: getCol('order_number') !== null ? getCol('order_number') : getCol('number order'),
                     order_status: getCol('order_status'),
                     payment_method: getCol('payment_method'),
                     shipping_courier: getCol('shipping_courier'),
                     shipping_awb: getCol('shipping_awb'),
                     shipping_receiver: getCol('shipping_receiver'),
                     phone: getCol('shipping_receiver_phone'),
-                    total_cost: getCol('total_cost'),
+                    total_cost: getCol('total_cost') !== null ? getCol('total_cost') : getCol('total cost'),
                     warehouse: getCol('warehouse'),
                     cs: getCol('diinput_oleh'),
                     kecamatan: getCol('kecamatan'),
                     kota: getCol('kota'),
                     provinsi: getCol('provinsi'),
-                    items: getCol('items')
+                    items: getCol('items'),
+                    order_date: getCol('order_date') !== null ? getCol('order_date') : getCol('order date')
                 };
 
                 const newOrdersPayload = [];
@@ -332,7 +333,21 @@ export const DataProvider = ({ children }) => {
                     let monCategory = 'Aman';
                     if (orderStatusStr === 'RTS') monCategory = 'Kritis';
 
+                    let parsedDate = undefined;
+                    if (cols.order_date !== null && row[cols.order_date]) {
+                        try {
+                            parsedDate = row[cols.order_date] instanceof Date
+                                ? row[cols.order_date].toISOString()
+                                : new Date(row[cols.order_date]).toISOString();
+                        } catch (e) {
+                            console.warn("Invalid date format in excel", row[cols.order_date]);
+                        }
+                    }
+
                     newOrdersPayload.push({
+                        id: cols.order_number !== null ? row[cols.order_number] : undefined,
+                        date: parsedDate,
+                        totalCost: cols.total_cost !== null ? row[cols.total_cost] : undefined,
                         customer: {
                             name: cols.shipping_receiver !== null ? row[cols.shipping_receiver] || 'Unknown' : 'Unknown',
                             phone: cols.phone !== null ? row[cols.phone] || '-' : '-'
