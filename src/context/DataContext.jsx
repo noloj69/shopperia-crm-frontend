@@ -14,8 +14,19 @@ export const DataProvider = ({ children }) => {
     });
     const [orders, setOrders] = useState([]);
     const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
-    const [importSessions, setImportSessions] = useState([]);
+    const [importSessions, setImportSessions] = useState(() => {
+        const saved = localStorage.getItem('shopperia_import_sessions');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [toastMessage, setToastMessage] = useState(null);
+    const [isFetchingOrders, setIsFetchingOrders] = useState(true);
+    const [isImporting, setIsImporting] = useState(false);
+    const [importProgress, setImportProgress] = useState(0);
+
+    // Persist Import Sessions
+    useEffect(() => {
+        localStorage.setItem('shopperia_import_sessions', JSON.stringify(importSessions));
+    }, [importSessions]);
     const [waTemplates, setWaTemplates] = useState({
         Stuck: 'Halo Kak {name}, pesanan {product} dengan No Resi {awb} sedang terkendala dijalan nih. Mohon ditunggu ya kak...',
         PaketBermasalah: 'Halo Kak {name}, kurir tidak dapat menemukan alamat kakak untuk pesanan {product}. Mohon bantuannya patokan lokasi ya...',
@@ -37,6 +48,7 @@ export const DataProvider = ({ children }) => {
     // Initial Data Fetch
     useEffect(() => {
         const fetchData = async () => {
+            setIsFetchingOrders(true);
             try {
                 // Fetch Users
                 const userRes = await fetch(`${API_BASE_URL}/api/users`);
@@ -59,6 +71,8 @@ export const DataProvider = ({ children }) => {
             } catch (error) {
                 console.error("Failed to fetch initial data:", error);
                 showToast("Gagal terhubung ke server database.");
+            } finally {
+                setIsFetchingOrders(false);
             }
         };
 
@@ -249,11 +263,15 @@ export const DataProvider = ({ children }) => {
     };
 
     const importOrdersFromExcel = (file) => {
+        setIsImporting(true);
+        setImportProgress(10);
         const reader = new FileReader();
         reader.onload = (e) => {
             const data = e.target.result;
+            setImportProgress(30);
             // dynamic import of xlsx
             import('xlsx').then(async (XLSX) => {
+                setImportProgress(50);
                 const workbook = XLSX.read(data, { type: 'binary' });
                 const sheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[sheetName];
@@ -359,6 +377,7 @@ export const DataProvider = ({ children }) => {
 
                             setImportSessions(prev => [sessionRecord, ...prev]);
                             setOrders(prev => [...createdOrders, ...prev]);
+                            setImportProgress(100);
                             showToast(`Data Excel Berhasil Diimpor! (${createdOrders.length} pesanan)`);
                         } else {
                             showToast('Gagal memproses file Excel di server.');
@@ -370,7 +389,17 @@ export const DataProvider = ({ children }) => {
                 } else {
                     showToast('Gagal memproses. Data Excel kosong atau cancel semua.');
                 }
+            }).catch(err => {
+                console.error("Excel processing error:", err);
+                showToast("Terjadi kesalahan saat memproses file Excel.");
+            }).finally(() => {
+                setTimeout(() => { setIsImporting(false); setImportProgress(0); }, 500);
             });
+        };
+        reader.onerror = () => {
+            showToast("Gagal membaca file.");
+            setIsImporting(false);
+            setImportProgress(0);
         };
         reader.readAsBinaryString(file);
     };
@@ -467,7 +496,8 @@ export const DataProvider = ({ children }) => {
             simulateWebhook, updateOrderStatus, updateOrderCourierPhone, deleteOrder, bulkDeleteOrders, importOrdersFromExcel,
             importSessions, undoImport,
             waTemplates, updateWaTemplate,
-            isDarkMode, toggleDarkMode, toastMessage, showToast, mockFetchTracking
+            isDarkMode, toggleDarkMode, toastMessage, showToast, mockFetchTracking,
+            isFetchingOrders, isImporting, importProgress
         }}>
             {children}
         </DataContext.Provider>
