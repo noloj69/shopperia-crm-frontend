@@ -300,7 +300,7 @@ export const DataProvider = ({ children }) => {
                     kota: getCol('kota'),
                     provinsi: getCol('provinsi'),
                     items: getCol('items'),
-                    order_date: getCol('order_date') !== null ? getCol('order_date') : getCol('order date')
+                    order_date: getCol('created_at') !== null ? getCol('created_at') : (getCol('order_date') !== null ? getCol('order_date') : getCol('order date'))
                 };
 
                 const newOrdersPayload = [];
