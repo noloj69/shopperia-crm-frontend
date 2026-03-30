@@ -418,3 +418,91 @@
 .font-medium {
     font-weight: 500;
 }
+
+/* Mobile Responsive Card Layout */
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: hidden;
+        background-color: transparent;
+    }
+    
+    .table-header {
+        display: none;
+    }
+    
+    .data-table {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+    
+    .table-row {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-width: 0;
+        background: white;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        margin-bottom: 1rem;
+        padding: 1rem;
+        gap: 0.75rem;
+        box-shadow: var(--shadow-sm);
+        align-items: flex-start;
+    }
+    
+    .td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        font-size: 0.875rem;
+        border-bottom: 1px dashed var(--color-border);
+        padding-bottom: 0.5rem;
+    }
+
+    .td:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    /* Labels for cards */
+    .td-checkbox::before { content: "Pilih Pesanan:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; }
+    .td-checkbox { justify-content: flex-start; gap: 10px; }
+    
+    .td-id::before { content: "Order Info:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
+    .td-id { flex-direction: column; align-items: flex-end; }
+    
+    .td-customer::before { content: "Penerima:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
+    .td-customer { flex-direction: column; align-items: flex-end; text-align: right; }
+    
+    .td-product::before { content: "Produk:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
+    .td-product { flex-direction: column; align-items: flex-end; text-align: right; }
+    
+    .td-cs::before { content: "CS:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; }
+    
+    .td-courier::before { content: "Kurir & Biaya:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
+    .td-courier { flex-direction: column; align-items: flex-end; }
+    
+    .td-payment::before { content: "Pembayaran:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; }
+    
+    .td-note::before { content: "Catatan:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
+    .td-note { flex-direction: column; align-items: flex-end; text-align: right; }
+    
+    .td-status::before { content: "Status:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
+    .td-status { flex-direction: column; align-items: flex-end; gap: 4px; }
+    
+    .td-followup::before { content: "Follow Up:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; }
+    
+    .td-action::before { content: "Aksi:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: center; }
+    .td-action { flex-direction: row; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: none; }
+    
+    /* Responsive tweaks for elements inside */
+    .id-text, .date-text, .warehouse-text, .customer-name, .customer-phone, .customer-ip {
+        justify-content: flex-end;
+    }
+    
+    .status-badge {
+        font-size: 0.75rem;
+    }
+}
