@@ -448,11 +448,22 @@ export const DataProvider = ({ children }) => {
                         const nonDuplicates = [];
 
                         newOrdersPayload.forEach(payload => {
-                            const isDuplicate = orders.some(o => 
-                                o.id === payload.id && 
-                                o.customer.name === payload.customer.name && 
-                                o.customer.phone === payload.customer.phone
-                            );
+                            const isDuplicate = orders.some(o => {
+                                const payloadName = payload.customer?.name?.toLowerCase().trim();
+                                const payloadPhone = payload.customer?.phone?.trim();
+                                const oName = o.customer?.name?.toLowerCase().trim();
+                                const oPhone = o.customer?.phone?.trim();
+                                
+                                const isNameMatch = payloadName === oName;
+                                const isPhoneMatch = payloadPhone === oPhone;
+                                
+                                // Jika ada ID di excel, prioritaskan cek ID. Jika tidak ada, pakai Nama + No HP
+                                if (payload.id) {
+                                    return (o.id === payload.id || o.db_id == payload.id) || (isNameMatch && isPhoneMatch);
+                                }
+                                return isNameMatch && isPhoneMatch;
+                            });
+
                             if (isDuplicate) {
                                 duplicates.push(payload);
                             } else {
@@ -461,7 +472,7 @@ export const DataProvider = ({ children }) => {
                         });
 
                         if (duplicates.length > 0) {
-                            const isPartial = window.confirm(`Ditemukan ${duplicates.length} data duplikat (berdasarkan ID, Nama, & No HP yang sama dengan sistem).\n\nKlik OK untuk import SEBAGIAN (hanya ${nonDuplicates.length} data baru).\nKlik Cancel untuk membatalkan seluruh import.`);
+                            const isPartial = window.confirm(`Ditemukan ${duplicates.length} data duplikat (berdasarkan histori Nama & No HP yang sudah ada di sistem).\n\nKlik OK untuk import SEBAGIAN (hanya ${nonDuplicates.length} data baru).\nKlik Cancel untuk membatalkan seluruh import.`);
                             if (isPartial) {
                                 finalPayload = nonDuplicates;
                             } else {
