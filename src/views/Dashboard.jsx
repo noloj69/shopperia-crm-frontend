@@ -5,8 +5,8 @@ import { ShieldAlert, CheckCircle, Package, TrendingDown, Truck, PackageCheck } 
 import { isToday, subDays, startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears } from 'date-fns';
 import './Dashboard.css';
 
-const Dashboard = () => {
-    const { orders } = useData();
+const Dashboard = ({ setActiveTab }) => {
+    const { orders, setDashboardFilter } = useData();
     const [dateFilter, setDateFilter] = useState('all');
     const [customStartDate, setCustomStartDate] = useState('');
     const [customEndDate, setCustomEndDate] = useState('');
@@ -149,7 +149,11 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                <div className="metric-card">
+                <div 
+                    className="metric-card cursor-pointer hover:shadow-md transition-shadow" 
+                    onClick={() => { setDashboardFilter('Shipping'); setActiveTab('orders'); }}
+                    title="Klik untuk melihat pesanan Shipping"
+                >
                     <div className="metric-icon-wrapper" style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)', color: '#eab308' }}>
                         <Truck size={24} />
                     </div>
@@ -159,7 +163,11 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                <div className="metric-card">
+                <div 
+                    className="metric-card cursor-pointer hover:shadow-md transition-shadow"
+                    onClick={() => { setDashboardFilter('Delivered'); setActiveTab('orders'); }}
+                    title="Klik untuk melihat pesanan Delivered"
+                >
                     <div className="metric-icon-wrapper green" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
                         <PackageCheck size={24} />
                     </div>
@@ -179,7 +187,11 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                <div className="metric-card">
+                <div 
+                    className="metric-card cursor-pointer hover:shadow-md transition-shadow"
+                    onClick={() => { setDashboardFilter('RTS'); setActiveTab('orders'); }}
+                    title="Klik untuk melihat pesanan RTS"
+                >
                     <div className="metric-icon-wrapper red">
                         <ShieldAlert size={24} />
                     </div>

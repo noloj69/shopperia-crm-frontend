@@ -36,7 +36,7 @@ const App = () => {
 
   return (
     <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
-      {activeTab === 'dashboard' && <Dashboard />}
+      {activeTab === 'dashboard' && <Dashboard setActiveTab={setActiveTab} />}
       {activeTab === 'terkendala' && <PaketTerkendala />}
       {activeTab === 'orders' && <Orders />}
       {activeTab === 'templates' && currentUser?.permissions?.includes('templates') && <FollowUpTemplates />}

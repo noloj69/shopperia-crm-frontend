@@ -133,11 +133,12 @@
 
 .table-header {
     display: grid;
-    grid-template-columns: 40px 140px 180px 220px 80px 160px 100px 100px 100px 120px 120px;
+    grid-template-columns: 40px 140px 180px 220px 80px 160px 120px 150px 120px 120px 120px;
     background-color: #F9FAFB;
     border-bottom: 1px solid var(--color-border);
     padding: 0.75rem 1rem;
     gap: 1rem;
+    min-width: 1500px;
 }
 
 .th {
@@ -154,12 +155,13 @@
 
 .table-row {
     display: grid;
-    grid-template-columns: 40px 140px 180px 220px 80px 160px 100px 100px 100px 120px 120px;
+    grid-template-columns: 40px 140px 180px 220px 80px 160px 120px 150px 120px 120px 120px;
     padding: 1rem;
     border-bottom: 1px solid var(--color-border);
     gap: 1rem;
     transition: background-color var(--transition-fast);
     align-items: center;
+    min-width: 1500px;
 }
 
 .table-row:hover {

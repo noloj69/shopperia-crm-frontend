@@ -22,6 +22,7 @@ export const DataProvider = ({ children }) => {
     const [isFetchingOrders, setIsFetchingOrders] = useState(true);
     const [isImporting, setIsImporting] = useState(false);
     const [importProgress, setImportProgress] = useState(0);
+    const [dashboardFilter, setDashboardFilter] = useState(null);
 
     // Persist Import Sessions
     useEffect(() => {
@@ -171,6 +172,33 @@ export const DataProvider = ({ children }) => {
         }
     };
 
+    const updatePaymentMethod = async (orderId, newMethod) => {
+        try {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+
+            const res = await fetch(`${API_BASE_URL}/api/orders/${order.db_id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentMethod: newMethod })
+            });
+
+            if (res.ok) {
+                setOrders(prevOrders => prevOrders.map(o => {
+                    if (o.id === orderId) {
+                        return { ...o, paymentMethod: newMethod };
+                    }
+                    return o;
+                }));
+            } else {
+                showToast("Gagal mengupdate pembayaran pesanan.");
+            }
+        } catch (error) {
+            console.error("Error updating payment:", error);
+            showToast("Terjadi kesalahan jaringan.");
+        }
+    };
+
     const deleteOrder = async (orderId) => {
         try {
             const order = orders.find(o => o.id === orderId);
@@ -217,6 +245,53 @@ export const DataProvider = ({ children }) => {
         } catch (error) {
             console.error("Error bulk deleting orders:", error);
             showToast("Terjadi kesalahan jaringan.");
+            return false;
+        }
+    };
+
+    const bulkUpdateOrders = async (dbIds, updateData) => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/orders/bulk-update`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ db_ids: dbIds, ...updateData })
+            });
+
+            if (res.ok) {
+                showToast(`${dbIds.length} order berhasil diupdate.`);
+                // Fetch the orders again directly or update local
+                 // We will update local state manually to optimize
+                setOrders(prevOrders => prevOrders.map(o => {
+                     if (dbIds.includes(o.db_id)) {
+                         return {
+                             ...o,
+                             ...(updateData.paymentMethod ? {paymentMethod: updateData.paymentMethod} : {}),
+                             tracking: {
+                                 ...o.tracking,
+                                 ...(updateData.orderStatus ? {orderStatus: updateData.orderStatus} : {}),
+                                 ...(updateData.statusCategory ? {statusCategory: updateData.statusCategory} : {}),
+                                 ...(updateData.statusText ? {statusText: updateData.statusText} : {})
+                             }
+                         }
+                     }
+                     return o;
+                 }));
+                 return true;
+            } else {
+                showToast("Gagal melakukan aksi massal, endpoint mungkin belum ada. Melakukan fallback satu-persatu.");
+                // Fallback loop if bulk-update API does not exist yet
+                for (let dbId of dbIds) {
+                    const o = orders.find(ord => ord.db_id === dbId);
+                    if (o) {
+                        if (updateData.paymentMethod) await updatePaymentMethod(o.id, updateData.paymentMethod);
+                        if (updateData.statusCategory) await updateOrderStatus(o.id, updateData.statusCategory, updateData.statusText || o.tracking.statusText, updateData.orderStatus || o.tracking.orderStatus);
+                    }
+                }
+                showToast(`${dbIds.length} order berhasil diupdate.`);
+                return true;
+            }
+        } catch (error) {
+            console.error("Error bulk updating:", error);
             return false;
         }
     };
@@ -508,11 +583,12 @@ export const DataProvider = ({ children }) => {
         <DataContext.Provider value={{
             currentUser, login, logout, users, addUser, deleteUser, editUser,
             orders: accessibleOrders, globalOrders: orders, setOrders,
-            simulateWebhook, updateOrderStatus, updateOrderCourierPhone, deleteOrder, bulkDeleteOrders, importOrdersFromExcel,
+            simulateWebhook, updateOrderStatus, updateOrderCourierPhone, deleteOrder, bulkDeleteOrders, bulkUpdateOrders, importOrdersFromExcel,
             importSessions, undoImport,
             waTemplates, updateWaTemplate,
             isDarkMode, toggleDarkMode, toastMessage, showToast, mockFetchTracking,
-            isFetchingOrders, isImporting, importProgress
+            isFetchingOrders, isImporting, importProgress,
+            updatePaymentMethod, dashboardFilter, setDashboardFilter
         }}>
             {children}
         </DataContext.Provider>

@@ -175,7 +175,7 @@ const OrderTableRow = ({ order, isSelected, onToggle }) => {
                         {copied ? <CheckCircle size={12} className="text-success" /> : <Copy size={12} />}
                     </button>
                 </div>
-                <div className="fee-line"><span className="fee-label">Total / Nilai COD:</span> <span className="text-primary font-medium">{formatCurrency(order.courierInfo.nilaiCOD)}</span></div>
+                <div className="fee-line"><span className="fee-label">Total / Nilai COD:</span> <span className="text-primary font-medium">{formatCurrency(order.totalCost || 0)}</span></div>
                 <div className="courier-phone" style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     {isEditingPhone ? (
                         <>
@@ -247,9 +247,11 @@ const OrderTableRow = ({ order, isSelected, onToggle }) => {
                     value={order.tracking.orderStatus}
                     onChange={(e) => {
                         const val = e.target.value;
-                        if (val === 'Delivered') updateOrderStatus(order.id, 'Aman', 'Pesanan telah sampai', 'Delivered');
-                        else if (val === 'RTS') updateOrderStatus(order.id, 'Kritis', 'Pesanan diretur', 'RTS');
-                        else if (val === 'Shipping') updateOrderStatus(order.id, order.tracking.statusCategory, 'Dalam proses pengiriman', 'Shipping');
+                        if (window.confirm(`Yakin ingin mengubah status pesanan ini menjadi ${val}?`)) {
+                            if (val === 'Delivered') updateOrderStatus(order.id, 'Aman', 'Pesanan telah sampai', 'Delivered');
+                            else if (val === 'RTS') updateOrderStatus(order.id, 'Kritis', 'Pesanan diretur', 'RTS');
+                            else if (val === 'Shipping') updateOrderStatus(order.id, order.tracking.statusCategory, 'Dalam proses pengiriman', 'Shipping');
+                        }
                     }}
                     style={{ fontSize: '0.75rem', padding: '4px', height: 'auto', width: '110px' }}
                 >
@@ -264,11 +266,13 @@ const OrderTableRow = ({ order, isSelected, onToggle }) => {
                     value={order.tracking.statusCategory}
                     onChange={(e) => {
                         const val = e.target.value;
-                        let text = order.tracking.statusText;
-                        if (val === 'Stuck') text = 'Stuck > 48 hours';
-                        if (val === 'Paket bermasalah') text = 'Alamat tidak ditemukan';
-                        if (val === 'Undelivery') text = 'Gagal kirim ulang';
-                        updateOrderStatus(order.id, val, text, order.tracking.orderStatus);
+                        if (window.confirm(`Yakin ingin mengubah monitoring menjadi ${val}?`)) {
+                            let text = order.tracking.statusText;
+                            if (val === 'Stuck') text = 'Stuck > 48 hours';
+                            if (val === 'Paket bermasalah') text = 'Alamat tidak ditemukan';
+                            if (val === 'Undelivery') text = 'Gagal kirim ulang';
+                            updateOrderStatus(order.id, val, text, order.tracking.orderStatus);
+                        }
                     }}
                     style={{ fontSize: '0.75rem', padding: '4px', height: 'auto', width: '110px' }}
                 >
@@ -307,7 +311,7 @@ const OrderTableRow = ({ order, isSelected, onToggle }) => {
 };
 
 const OrderListTable = ({ orders, title, subtitle }) => {
-    const { bulkDeleteOrders } = useData();
+    const { bulkDeleteOrders, bulkUpdateOrders, dashboardFilter, setDashboardFilter } = useData();
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedIds, setSelectedIds] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -320,6 +324,15 @@ const OrderListTable = ({ orders, title, subtitle }) => {
     const [csFilter, setCsFilter] = useState('');
 
     const [itemsPerPage, setItemsPerPage] = useState(25);
+
+    // Initial Dashboard Filter Effect
+    React.useEffect(() => {
+        if (dashboardFilter) {
+            setStatusFilter(dashboardFilter);
+            setDashboardFilter(null);
+            setCurrentPage(1);
+        }
+    }, [dashboardFilter, setDashboardFilter]);
 
     // Extract unique CS Names
     const uniqueCS = Array.from(new Set(orders.map(o => o.csToken))).sort();
@@ -494,13 +507,85 @@ const OrderListTable = ({ orders, title, subtitle }) => {
                     <button className="search-btn"><Search size={14} color="white" /></button>
                 </div>
                 {selectedIds.length > 0 && (
-                    <button
-                        className="btn btn-outline"
-                        onClick={handleBulkDelete}
-                        style={{ color: '#EF4444', borderColor: '#EF4444', display: 'flex', alignItems: 'center', gap: '8px', padding: '0.4rem 0.8rem' }}
-                    >
-                        <Trash2 size={16} /> Hapus {selectedIds.length}
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', width: '100%' }}>
+                        <select 
+                            className="filter-select"
+                            style={{ padding: '0.4rem 0.8rem' }}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (val && window.confirm(`Ubah status ${selectedIds.length} pesanan menjadi ${val}?`)) {
+                                    const selectedDbIds = orders.filter(o => selectedIds.includes(o.id)).map(o => o.db_id);
+                                    let updateData = { orderStatus: val };
+                                    if (val === 'Delivered') updateData = { orderStatus: 'Delivered', statusCategory: 'Aman', statusText: 'Pesanan telah sampai' };
+                                    if (val === 'RTS') updateData = { orderStatus: 'RTS', statusCategory: 'Kritis', statusText: 'Pesanan diretur' };
+                                    bulkUpdateOrders(selectedDbIds, updateData);
+                                    e.target.value = '';
+                                } else {
+                                    e.target.value = '';
+                                }
+                            }}
+                        >
+                            <option value="">Aksi Status</option>
+                            <option value="Shipping">Set Shipping</option>
+                            <option value="Delivered">Set Delivered</option>
+                            <option value="RTS">Set RTS</option>
+                        </select>
+                        
+                        <select 
+                            className="filter-select"
+                            style={{ padding: '0.4rem 0.8rem' }}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (val && window.confirm(`Ubah monitoring ${selectedIds.length} pesanan menjadi ${val}?`)) {
+                                    const selectedDbIds = orders.filter(o => selectedIds.includes(o.id)).map(o => o.db_id);
+                                    let text = '';
+                                    if (val === 'Stuck') text = 'Stuck > 48 hours';
+                                    if (val === 'Paket bermasalah') text = 'Alamat tidak ditemukan';
+                                    if (val === 'Undelivery') text = 'Gagal kirim ulang';
+                                    if (val === 'Aman') text = 'Pesanan aman';
+                                    if (val === 'Kritis') text = 'Kritis';
+                                    bulkUpdateOrders(selectedDbIds, { statusCategory: val, statusText: text });
+                                    e.target.value = '';
+                                } else {
+                                    e.target.value = '';
+                                }
+                            }}
+                        >
+                            <option value="">Aksi Monitoring</option>
+                            <option value="Aman">Set Aman</option>
+                            <option value="Stuck">Set Stuck</option>
+                            <option value="Paket bermasalah">Set Bermasalah</option>
+                            <option value="Undelivery">Set Undelivery</option>
+                            <option value="Kritis">Set Kritis</option>
+                        </select>
+                        
+                        <select 
+                            className="filter-select"
+                            style={{ padding: '0.4rem 0.8rem' }}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (val && window.confirm(`Ubah pembayaran ${selectedIds.length} pesanan menjadi ${val}?`)) {
+                                    const selectedDbIds = orders.filter(o => selectedIds.includes(o.id)).map(o => o.db_id);
+                                    bulkUpdateOrders(selectedDbIds, { paymentMethod: val });
+                                    e.target.value = '';
+                                } else {
+                                    e.target.value = '';
+                                }
+                            }}
+                        >
+                            <option value="">Aksi Pembayaran</option>
+                            <option value="COD">Set COD</option>
+                            <option value="Transfer">Set Transfer</option>
+                        </select>
+
+                        <button
+                            className="btn btn-outline"
+                            onClick={handleBulkDelete}
+                            style={{ color: '#EF4444', borderColor: '#EF4444', display: 'flex', alignItems: 'center', gap: '8px', padding: '0.4rem 0.8rem', marginLeft: 'auto' }}
+                        >
+                            <Trash2 size={16} /> Hapus {selectedIds.length}
+                        </button>
+                    </div>
                 )}
             </div>
 
