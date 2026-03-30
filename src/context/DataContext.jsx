@@ -441,12 +441,44 @@ export const DataProvider = ({ children }) => {
                     });
                 }
 
-                if (newOrdersPayload.length > 0) {
+                    let finalPayload = newOrdersPayload;
+
+                    if (newOrdersPayload.length > 0) {
+                        const duplicates = [];
+                        const nonDuplicates = [];
+
+                        newOrdersPayload.forEach(payload => {
+                            const isDuplicate = orders.some(o => 
+                                o.id === payload.id && 
+                                o.customer.name === payload.customer.name && 
+                                o.customer.phone === payload.customer.phone
+                            );
+                            if (isDuplicate) {
+                                duplicates.push(payload);
+                            } else {
+                                nonDuplicates.push(payload);
+                            }
+                        });
+
+                        if (duplicates.length > 0) {
+                            const isPartial = window.confirm(`Ditemukan ${duplicates.length} data duplikat (berdasarkan ID, Nama, & No HP yang sama dengan sistem).\n\nKlik OK untuk import SEBAGIAN (hanya ${nonDuplicates.length} data baru).\nKlik Cancel untuk membatalkan seluruh import.`);
+                            if (isPartial) {
+                                finalPayload = nonDuplicates;
+                            } else {
+                                showToast("Import dibatalkan oleh pengguna.");
+                                setIsImporting(false);
+                                setImportProgress(0);
+                                return; // Stop execution
+                            }
+                        }
+                    }
+
+                if (finalPayload.length > 0) {
                     try {
                         const res = await fetch(`${API_BASE_URL}/api/orders`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(newOrdersPayload) // Passing array
+                            body: JSON.stringify(finalPayload) // Passing array
                         });
 
                         const data = await res.json();

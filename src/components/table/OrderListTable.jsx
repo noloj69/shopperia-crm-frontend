@@ -412,6 +412,46 @@ const OrderListTable = ({ orders, title, subtitle }) => {
         }
     };
 
+    const handleExport = async () => {
+        if (filteredOrders.length === 0) {
+            alert("Tidak ada data untuk diekspor.");
+            return;
+        }
+        try {
+            const XLSX = await import('xlsx');
+            const exportData = filteredOrders.map(order => ({
+                'ID Pesanan': order.id,
+                'Tanggal': format(new Date(order.date), "dd/MM/yyyy HH:mm"),
+                'Penerima': order.customer.name,
+                'No. HP': order.customer.phone,
+                'Alamat': order.address,
+                'Produk': order.product,
+                'CS': order.csToken,
+                'Kurir': order.courierInfo.name,
+                'Resi': order.courierInfo.awb,
+                'Total / COD': order.totalCost || 0,
+                'Pembayaran': order.paymentMethod,
+                'Status': order.tracking.orderStatus,
+                'Monitoring': order.tracking.statusCategory,
+                'Catatan': order.note || '-'
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
+            
+            // Format column widths
+            const wscols = Object.keys(exportData[0]).map(key => ({ wch: Math.max(key.length + 5, 15) }));
+            worksheet['!cols'] = wscols;
+
+            const filename = `Export_Pesanan_${format(new Date(), 'ddMMyyyy_HHmm')}.xlsx`;
+            XLSX.writeFile(workbook, filename);
+        } catch (error) {
+            console.error("Failed to export data", error);
+            alert("Gagal melakukan export data.");
+        }
+    };
+
     const handleBulkDelete = () => {
         if (window.confirm(`Yakin ingin menghapus ${selectedIds.length} order yang dipilih?`)) {
             const selectedDbIds = orders
@@ -494,6 +534,16 @@ const OrderListTable = ({ orders, title, subtitle }) => {
                         />
                     </div>
                 )}
+                
+                <button 
+                    onClick={handleExport}
+                    className="btn btn-outline"
+                    style={{ padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#10b981', color: 'white', border: 'none' }}
+                    title="Export data saat ini ke Excel"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold' }}>Export Excel</span>
+                </button>
 
                 <div className="search-box-wrapper" style={{ flexGrow: 1, minWidth: '250px' }}>
                     <span className="search-prefix">Pencarian</span>
