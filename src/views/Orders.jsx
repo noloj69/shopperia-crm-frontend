@@ -6,7 +6,7 @@ const Orders = () => {
     const { orders } = useData();
 
     return (
-        <div style={{ padding: '1.5rem', height: '100%', overflow: 'auto' }}>
+        <div className="orders-page-container">
             <OrderListTable
                 orders={orders}
                 title="Semua Pesanan"

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { format, isToday, subDays, startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, subYears } from 'date-fns';
-import { ChevronDown, MessageCircle, AlertCircle, Copy, CheckCircle, PackageCheck, PackageX, Truck, ShieldCheck, Clock, Ban, Search, Trash2 } from 'lucide-react';
+import { ChevronDown, MessageCircle, AlertCircle, Copy, CheckCircle, PackageCheck, PackageX, Truck, ShieldCheck, Clock, Ban, Search, Trash2, Calendar, MapPin } from 'lucide-react';
 import './OrderListTable.css';
 
 import { useData } from '../../context/DataContext';
@@ -131,170 +131,280 @@ const OrderTableRow = ({ order, isSelected, onToggle }) => {
         return encodeURIComponent(text);
     };
     return (
-        <div className="table-row">
-            <div className="td td-checkbox">
-                <input type="checkbox" className="row-checkbox" checked={isSelected} onChange={onToggle} />
-            </div>
-
-            <div className="td td-id">
-                <div className="id-text">
-                    <span className="text-primary font-medium">{order.id}</span>
+        <div className="order-row-wrapper">
+            {/* Desktop View */}
+            <div className="desktop-view table-row">
+                <div className="td td-checkbox">
+                    <input type="checkbox" className="row-checkbox" checked={isSelected} onChange={onToggle} />
                 </div>
-                <div className="date-text">{format(new Date(order.date), "EEE dd MMM yyyy - HH:mm")}</div>
-                <div className="warehouse-text badge-process" style={{ marginTop: '4px', display: 'inline-block' }}>{order.warehouse || 'EZ Bekasi'}</div>
-            </div>
 
-            <div className="td td-customer">
-                <div className="customer-name">
-                    {order.customer.name}
-                    {order.customer.rtsFlag && <span className="rts-dot" title="RTS History">R</span>}
+                <div className="td td-id">
+                    <div className="id-text">
+                        <span className="text-primary font-medium">{order.id}</span>
+                    </div>
+                    <div className="date-text">{format(new Date(order.date), "EEE dd MMM yyyy - HH:mm")}</div>
+                    <div className="warehouse-text badge-process" style={{ marginTop: '4px', display: 'inline-block' }}>{order.warehouse || 'EZ Bekasi'}</div>
                 </div>
-                <div className="customer-phone">{order.customer.phone}</div>
-                <div className="customer-ip text-muted" style={{ fontSize: '0.75rem', marginTop: '2px' }}>{order.address}</div>
-            </div>
 
-            <div className="td td-product">
-                <div className="product-name">{order.product}</div>
-            </div>
+                <div className="td td-customer">
+                    <div className="customer-name">
+                        {order.customer.name}
+                        {order.customer.rtsFlag && <span className="rts-dot" title="RTS History">R</span>}
+                    </div>
+                    <div className="customer-phone">{order.customer.phone}</div>
+                    <div className="customer-ip text-muted" style={{ fontSize: '0.75rem', marginTop: '2px' }}>{order.address}</div>
+                </div>
 
-            <div className="td td-cs">
-                <div className="cs-token">{order.csToken}</div>
-            </div>
+                <div className="td td-product">
+                    <div className="product-name">{order.product}</div>
+                </div>
 
-            <div className="td td-courier">
-                <div className="courier-name pb-1 border-b border-gray-100 mb-1">
-                    {order.courierInfo.name} -
-                    <button
-                        className="ml-1 text-primary hover:text-blue-800 font-medium underline-offset-2 hover:underline transition-all"
-                        onClick={handleTrackResi}
-                        title="Klik untuk Lacak Resi"
+                <div className="td td-cs">
+                    <div className="cs-token">{order.csToken}</div>
+                </div>
+
+                <div className="td td-courier">
+                    <div className="courier-name pb-1 border-b border-gray-100 mb-1">
+                        {order.courierInfo.name} -
+                        <button
+                            className="ml-1 text-primary hover:text-blue-800 font-medium underline-offset-2 hover:underline transition-all"
+                            onClick={handleTrackResi}
+                            title="Klik untuk Lacak Resi"
+                        >
+                            {order.courierInfo.awb}
+                        </button>
+                        <button className="copy-btn ml-2" onClick={handleCopy} title="Copy Resi">
+                            {copied ? <CheckCircle size={12} className="text-success" /> : <Copy size={12} />}
+                        </button>
+                    </div>
+                    <div className="fee-line"><span className="fee-label">Total / Nilai COD:</span> <span className="text-primary font-medium">{formatCurrency(order.totalCost || 0)}</span></div>
+                    <div className="courier-phone" style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        {isEditingPhone ? (
+                            <>
+                                <input
+                                    type="text"
+                                    placeholder="No. Kurir..."
+                                    value={courierPhone}
+                                    onChange={(e) => setCourierPhone(e.target.value)}
+                                    style={{ fontSize: '0.75rem', padding: '2px 4px', border: '1px solid #ccc', borderRadius: '4px', width: '90px' }}
+                                />
+                                <button onClick={handleSavePhone} className="text-primary hover:text-blue-700" title="Simpan" style={{ fontSize: '0.7rem', cursor: 'pointer', background: 'none', border: 'none', fontWeight: '500' }}>Save</button>
+                            </>
+                        ) : (
+                            <>
+                                {order.courierInfo.kurirPhone ? (
+                                    <a
+                                        href={`https://wa.me/${order.courierInfo.kurirPhone}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        style={{ fontSize: '0.75rem', color: '#2563EB', textDecoration: 'none', fontWeight: '500' }}
+                                        title="Hubungi Kurir via WA"
+                                    >
+                                        {order.courierInfo.kurirPhone}
+                                    </a>
+                                ) : (
+                                    <span style={{ fontSize: '0.75rem', color: '#999' }}>Input No. Kurir</span>
+                                )}
+                                <button onClick={() => setIsEditingPhone(true)} className="text-muted hover:text-primary" title="Edit" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px' }}>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                <div className="td td-payment">
+                    <div className="payment-method">{order.paymentMethod}</div>
+                </div>
+
+                <div className="td td-note">
+                    <div className="note-text">{order.note}</div>
+                </div>
+
+                <div className="td td-status">
+                    <div className={`status-badge badge-${order.tracking.orderStatus === 'RTS' ? 'pending' : 'process'}`}>{order.tracking.orderStatus}</div>
+                    <div className={`status-badge badge-${order.tracking.statusCategory === 'Aman' ? 'success' : 'danger'}`}>{order.tracking.statusCategory}</div>
+                    <div className="text-muted" style={{ fontSize: '0.7rem', marginTop: '4px' }}>{order.tracking.statusText}</div>
+                </div>
+
+                <div className="td td-followup">
+                    <a
+                        href={`https://wa.me/${order.customer.phone}?text=${getWaText()}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`btn-followup ${isFollowedUp ? 'followed' : ''}`}
+                        onClick={() => {
+                            setIsFollowedUp(true);
+                            localStorage.setItem(`followed_up_${order.id}`, 'true');
+                        }}
+                        title="Kirim pesan WhatsApp sbg Follow Up"
                     >
-                        {order.courierInfo.awb}
-                    </button>
-                    <button className="copy-btn ml-2" onClick={handleCopy} title="Copy Resi">
-                        {copied ? <CheckCircle size={12} className="text-success" /> : <Copy size={12} />}
+                        FOLLOW UP
+                    </a>
+                </div>
+
+                <div className="td td-action" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <select
+                        className="filter-select"
+                        value={order.tracking.orderStatus}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            if (window.confirm(`Yakin ingin mengubah status pesanan ini menjadi ${val}?`)) {
+                                if (val === 'Delivered') updateOrderStatus(order.id, 'Aman', 'Pesanan telah sampai', 'Delivered');
+                                else if (val === 'RTS') updateOrderStatus(order.id, 'Kritis', 'Pesanan diretur', 'RTS');
+                                else if (val === 'Shipping') updateOrderStatus(order.id, order.tracking.statusCategory, 'Dalam proses pengiriman', 'Shipping');
+                            }
+                        }}
+                        style={{ fontSize: '0.75rem', padding: '4px', height: 'auto', width: '110px' }}
+                    >
+                        <option disabled value="">Ubah Status</option>
+                        <option value="Shipping">Shipping</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="RTS">RTS</option>
+                    </select>
+
+                    <select
+                        className="filter-select"
+                        value={order.tracking.statusCategory}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            if (window.confirm(`Yakin ingin mengubah monitoring menjadi ${val}?`)) {
+                                let text = order.tracking.statusText;
+                                if (val === 'Stuck') text = 'Stuck > 48 hours';
+                                if (val === 'Paket bermasalah') text = 'Alamat tidak ditemukan';
+                                if (val === 'Undelivery') text = 'Gagal kirim ulang';
+                                updateOrderStatus(order.id, val, text, order.tracking.orderStatus);
+                            }
+                        }}
+                        style={{ fontSize: '0.75rem', padding: '4px', height: 'auto', width: '110px' }}
+                    >
+                        <option disabled value="">Ubah Monitoring</option>
+                        <option value="Aman">Aman</option>
+                        <option value="Stuck">Stuck</option>
+                        <option value="Paket bermasalah">Bermasalah</option>
+                        <option value="Undelivery">Undelivery</option>
+                        <option value="Kritis">Kritis</option>
+                    </select>
+                    <button
+                        onClick={() => {
+                            if (window.confirm(`Yakin ingin menghapus order ${order.id}?`)) {
+                                deleteOrder(order.id);
+                            }
+                        }}
+                        className="btn btn-outline"
+                        style={{ padding: '4px', marginTop: '2px', color: '#EF4444', borderColor: '#EF4444', width: '110px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px' }}
+                        title="Hapus Order"
+                    >
+                        <Trash2 size={12} /> <span style={{ fontSize: '11px', fontWeight: 'bold' }}>Hapus</span>
                     </button>
                 </div>
-                <div className="fee-line"><span className="fee-label">Total / Nilai COD:</span> <span className="text-primary font-medium">{formatCurrency(order.totalCost || 0)}</span></div>
-                <div className="courier-phone" style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    {isEditingPhone ? (
-                        <>
-                            <input
-                                type="text"
-                                placeholder="No. Kurir..."
-                                value={courierPhone}
-                                onChange={(e) => setCourierPhone(e.target.value)}
-                                style={{ fontSize: '0.75rem', padding: '2px 4px', border: '1px solid #ccc', borderRadius: '4px', width: '90px' }}
-                            />
-                            <button onClick={handleSavePhone} className="text-primary hover:text-blue-700" title="Simpan" style={{ fontSize: '0.7rem', cursor: 'pointer', background: 'none', border: 'none', fontWeight: '500' }}>Save</button>
-                        </>
-                    ) : (
-                        <>
-                            {order.courierInfo.kurirPhone ? (
-                                <a
-                                    href={`https://wa.me/${order.courierInfo.kurirPhone}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    style={{ fontSize: '0.75rem', color: '#2563EB', textDecoration: 'none', fontWeight: '500' }}
-                                    title="Hubungi Kurir via WA"
-                                >
-                                    {order.courierInfo.kurirPhone}
-                                </a>
-                            ) : (
-                                <span style={{ fontSize: '0.75rem', color: '#999' }}>Input No. Kurir</span>
-                            )}
-                            <button onClick={() => setIsEditingPhone(true)} className="text-muted hover:text-primary" title="Edit" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px' }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                            </button>
-                        </>
+            </div>
+
+            {/* Mobile View */}
+            <div className="mobile-view mobile-order-card">
+                <div className="moc-header">
+                    <div className="moc-customer">
+                        <span className="moc-name">{order.customer.name}</span>
+                        {order.customer.rtsFlag && <span className="rts-dot" title="RTS History">R</span>}
+                    </div>
+                    <div className={`status-badge badge-${order.tracking.orderStatus === 'RTS' ? 'pending' : order.tracking.orderStatus === 'Delivered' ? 'paid' : 'process'}`}>
+                        {order.tracking.orderStatus}
+                    </div>
+                    <div className={`status-badge badge-${order.tracking.statusCategory === 'Aman' ? 'success' : 'danger'}`} style={{ marginLeft: '4px' }}>
+                        {order.tracking.statusCategory}
+                    </div>
+                </div>
+                
+                <div className="moc-id" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span># {order.id}</span>
+                    <span className="text-primary font-medium" style={{ fontSize: '0.75rem', background: '#EFF6FF', padding: '2px 8px', borderRadius: '4px' }}>CS: {order.csToken}</span>
+                </div>
+                
+                <div className="moc-datetime-row">
+                    <div className="moc-icon-text">
+                        <Calendar size={14} className="text-muted" />
+                        <span>{format(new Date(order.date), "dd MMM, yyyy")}</span>
+                    </div>
+                    <div className="moc-icon-text ml-4">
+                        <Clock size={14} className="text-muted" />
+                        <span>{format(new Date(order.date), "HH:mm")}</span>
+                    </div>
+                </div>
+
+                <div className="moc-icon-text moc-address">
+                    <MapPin size={14} className="text-muted" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span style={{ lineHeight: '1.4' }}>{order.address}</span>
+                </div>
+
+                <div className="moc-divider"></div>
+
+                <div className="moc-crm-grid">
+                    <div className="moc-crm-item">
+                        <span className="moc-crm-label">Produk:</span>
+                        <span className="moc-crm-value">{order.product}</span>
+                    </div>
+                    <div className="moc-crm-item">
+                        <span className="moc-crm-label">Total / Bayar:</span>
+                        <span className="moc-crm-value text-primary font-medium">{formatCurrency(order.totalCost || 0)} ({order.paymentMethod})</span>
+                    </div>
+                    <div className="moc-crm-item">
+                        <span className="moc-crm-label">Kurir & Resi:</span>
+                        <span className="moc-crm-value inline-flex items-center">
+                            {order.courierInfo.name} - 
+                            <button className="ml-1 text-primary hover:text-blue-800 font-medium underline-offset-2 hover:underline inline-flex" onClick={handleTrackResi}>{order.courierInfo.awb}</button>
+                            <button className="copy-btn ml-1" onClick={handleCopy}>{copied ? <CheckCircle size={12} className="text-success" /> : <Copy size={12} />}</button>
+                        </span>
+                    </div>
+                    {order.note && (
+                        <div className="moc-crm-item">
+                            <span className="moc-crm-label">Catatan:</span>
+                            <span className="moc-crm-value">{order.note}</span>
+                        </div>
                     )}
                 </div>
-            </div>
 
-            <div className="td td-payment">
-                <div className="payment-method">{order.paymentMethod}</div>
-            </div>
+                <div className="moc-footer">
+                    <label className="moc-checkbox-wrap">
+                        <input type="checkbox" className="row-checkbox" checked={isSelected} onChange={onToggle} />
+                        <span style={{ fontSize: '0.8rem', fontWeight: '500', color: '#4b5563' }}>Pilih</span>
+                    </label>
+                    
+                    <div className="moc-action-buttons">
+                        <select
+                            className="filter-select"
+                            value={order.tracking.orderStatus}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (window.confirm(`Yakin ingin mengubah status pesanan ini menjadi ${val}?`)) {
+                                    if (val === 'Delivered') updateOrderStatus(order.id, 'Aman', 'Pesanan telah sampai', 'Delivered');
+                                    else if (val === 'RTS') updateOrderStatus(order.id, 'Kritis', 'Pesanan diretur', 'RTS');
+                                    else if (val === 'Shipping') updateOrderStatus(order.id, order.tracking.statusCategory, 'Dalam proses pengiriman', 'Shipping');
+                                }
+                            }}
+                            style={{ fontSize: '0.75rem', padding: '4px 20px 4px 8px', height: '28px', minWidth: '100px', backgroundColor: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '4px' }}
+                        >
+                            <option disabled value="">Status</option>
+                            <option value="Shipping">Shipping</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="RTS">RTS</option>
+                        </select>
 
-            <div className="td td-note">
-                <div className="note-text">{order.note}</div>
-            </div>
-
-            <div className="td td-status">
-                <div className={`status-badge badge-${order.tracking.orderStatus === 'RTS' ? 'pending' : 'process'}`}>{order.tracking.orderStatus}</div>
-                <div className={`status-badge badge-${order.tracking.statusCategory === 'Aman' ? 'success' : 'danger'}`}>{order.tracking.statusCategory}</div>
-                <div className="text-muted" style={{ fontSize: '0.7rem', marginTop: '4px' }}>{order.tracking.statusText}</div>
-            </div>
-
-            <div className="td td-followup">
-                <a
-                    href={`https://wa.me/${order.customer.phone}?text=${getWaText()}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`btn-followup ${isFollowedUp ? 'followed' : ''}`}
-                    onClick={() => {
-                        setIsFollowedUp(true);
-                        localStorage.setItem(`followed_up_${order.id}`, 'true');
-                    }}
-                    title="Kirim pesan WhatsApp sbg Follow Up"
-                >
-                    FOLLOW UP
-                </a>
-            </div>
-
-            <div className="td td-action" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <select
-                    className="filter-select"
-                    value={order.tracking.orderStatus}
-                    onChange={(e) => {
-                        const val = e.target.value;
-                        if (window.confirm(`Yakin ingin mengubah status pesanan ini menjadi ${val}?`)) {
-                            if (val === 'Delivered') updateOrderStatus(order.id, 'Aman', 'Pesanan telah sampai', 'Delivered');
-                            else if (val === 'RTS') updateOrderStatus(order.id, 'Kritis', 'Pesanan diretur', 'RTS');
-                            else if (val === 'Shipping') updateOrderStatus(order.id, order.tracking.statusCategory, 'Dalam proses pengiriman', 'Shipping');
-                        }
-                    }}
-                    style={{ fontSize: '0.75rem', padding: '4px', height: 'auto', width: '110px' }}
-                >
-                    <option disabled value="">Ubah Status</option>
-                    <option value="Shipping">Shipping</option>
-                    <option value="Delivered">Delivered</option>
-                    <option value="RTS">RTS</option>
-                </select>
-
-                <select
-                    className="filter-select"
-                    value={order.tracking.statusCategory}
-                    onChange={(e) => {
-                        const val = e.target.value;
-                        if (window.confirm(`Yakin ingin mengubah monitoring menjadi ${val}?`)) {
-                            let text = order.tracking.statusText;
-                            if (val === 'Stuck') text = 'Stuck > 48 hours';
-                            if (val === 'Paket bermasalah') text = 'Alamat tidak ditemukan';
-                            if (val === 'Undelivery') text = 'Gagal kirim ulang';
-                            updateOrderStatus(order.id, val, text, order.tracking.orderStatus);
-                        }
-                    }}
-                    style={{ fontSize: '0.75rem', padding: '4px', height: 'auto', width: '110px' }}
-                >
-                    <option disabled value="">Ubah Monitoring</option>
-                    <option value="Aman">Aman</option>
-                    <option value="Stuck">Stuck</option>
-                    <option value="Paket bermasalah">Bermasalah</option>
-                    <option value="Undelivery">Undelivery</option>
-                    <option value="Kritis">Kritis</option>
-                </select>
-                <button
-                    onClick={() => {
-                        if (window.confirm(`Yakin ingin menghapus order ${order.id}?`)) {
-                            deleteOrder(order.id);
-                        }
-                    }}
-                    className="btn btn-outline"
-                    style={{ padding: '4px', marginTop: '2px', color: '#EF4444', borderColor: '#EF4444', width: '110px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px' }}
-                    title="Hapus Order"
-                >
-                    <Trash2 size={12} /> <span style={{ fontSize: '11px', fontWeight: 'bold' }}>Hapus</span>
-                </button>
+                        <a
+                            href={`https://wa.me/${order.customer.phone}?text=${getWaText()}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={`btn-followup ${isFollowedUp ? 'followed' : ''}`}
+                            onClick={() => {
+                                setIsFollowedUp(true);
+                                localStorage.setItem(`followed_up_${order.id}`, 'true');
+                            }}
+                            style={{ padding: '4px 12px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            title="Follow Up WhatsApp"
+                        >
+                            WA
+                        </a>
+                    </div>
+                </div>
             </div>
 
             <TrackingModal
@@ -640,6 +750,18 @@ const OrderListTable = ({ orders, title, subtitle }) => {
             </div>
 
             <div className="data-table">
+                {/* Mobile Select All Header */}
+                <div className="mobile-view" style={{ padding: '1rem', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: '8px', background: '#F9FAFB', borderTopLeftRadius: '12px', borderTopRightRadius: '12px' }}>
+                    <input
+                        type="checkbox"
+                        onChange={handleSelectAll}
+                        checked={currentOrders.length > 0 && currentOrders.every(o => selectedIds.includes(o.id))}
+                        className="row-checkbox"
+                        style={{ width: '18px', height: '18px' }}
+                    />
+                    <span style={{ fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Pilih Semua Pesanan ({currentOrders.length})</span>
+                </div>
+
                 <div className="table-header">
                     <div className="th th-checkbox">
                         <input

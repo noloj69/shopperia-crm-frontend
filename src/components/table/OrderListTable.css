@@ -419,11 +419,22 @@
     font-weight: 500;
 }
 
+/* Dual Layout Display Control */
+.mobile-view { display: none; }
+
 /* Mobile Responsive Card Layout */
 @media (max-width: 768px) {
     .table-container {
         overflow-x: hidden;
         background-color: transparent;
+        padding: 0;
+        width: 100%;
+        max-width: 100vw;
+        box-sizing: border-box;
+    }
+    
+    .table-row {
+        min-width: 0 !important;
     }
     
     .table-header {
@@ -434,75 +445,201 @@
         background: transparent;
         border: none;
         box-shadow: none;
+        min-width: 0 !important;
     }
     
-    .table-row {
+    /* Switch views */
+    .desktop-view { display: none !important; }
+    .mobile-view { display: flex !important; }
+
+    .mobile-order-card {
         display: flex;
         flex-direction: column;
-        width: 100%;
-        min-width: 0;
-        background: white;
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-md);
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        border: 1px solid #f1f5f9;
         margin-bottom: 1rem;
-        padding: 1rem;
-        gap: 0.75rem;
-        box-shadow: var(--shadow-sm);
-        align-items: flex-start;
+        padding: 1.25rem;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Decorative bottom-right rings matching image aesthetic */
+    .mobile-order-card::after {
+        content: "";
+        position: absolute;
+        bottom: -20px;
+        right: -20px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 2px solid #f8fafc;
+        z-index: 0;
+        pointer-events: none;
     }
     
-    .td {
+    .mobile-order-card::before {
+        content: "";
+        position: absolute;
+        bottom: -40px;
+        right: -40px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 2px solid #f8fafc;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .mobile-order-card > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .moc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.25rem;
+    }
+
+    .moc-customer {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .moc-name {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #111827;
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .moc-id {
+        font-size: 0.8rem;
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+
+    .moc-datetime-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .moc-icon-text {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: #4b5563;
+    }
+    
+    .moc-address {
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .moc-divider {
+        height: 1px;
+        background-color: #f1f5f9;
+        margin: 0.5rem -1.25rem 1rem -1.25rem;
+    }
+
+    .moc-crm-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .moc-crm-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        font-size: 0.85rem;
+    }
+
+    .moc-crm-label {
+        color: #6b7280;
+        flex-shrink: 0;
+        width: 90px;
+    }
+
+    .moc-crm-value {
+        color: #1f2937;
+        text-align: right;
+        font-weight: 500;
+        word-break: break-word;
+    }
+
+    .moc-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 100%;
-        font-size: 0.875rem;
-        border-bottom: 1px dashed var(--color-border);
-        padding-bottom: 0.5rem;
+        margin-top: auto;
+        padding-top: 0.5rem;
     }
 
-    .td:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
+    .moc-checkbox-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+    }
+
+    .moc-action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Status badge pill - soft design */
+    .mobile-order-card .status-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        background: #ecffff; 
+        color: #0d9488;
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+
+    .mobile-order-card .badge-paid,
+    .mobile-order-card .badge-success {
+        background-color: #dcfce7 !important;
+        color: #16a34a !important;
     }
     
-    /* Labels for cards */
-    .td-checkbox::before { content: "Pilih Pesanan:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; }
-    .td-checkbox { justify-content: flex-start; gap: 10px; }
-    
-    .td-id::before { content: "Order Info:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
-    .td-id { flex-direction: column; align-items: flex-end; }
-    
-    .td-customer::before { content: "Penerima:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
-    .td-customer { flex-direction: column; align-items: flex-end; text-align: right; }
-    
-    .td-product::before { content: "Produk:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
-    .td-product { flex-direction: column; align-items: flex-end; text-align: right; }
-    
-    .td-cs::before { content: "CS:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; }
-    
-    .td-courier::before { content: "Kurir & Biaya:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
-    .td-courier { flex-direction: column; align-items: flex-end; }
-    
-    .td-payment::before { content: "Pembayaran:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; }
-    
-    .td-note::before { content: "Catatan:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
-    .td-note { flex-direction: column; align-items: flex-end; text-align: right; }
-    
-    .td-status::before { content: "Status:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: flex-start; }
-    .td-status { flex-direction: column; align-items: flex-end; gap: 4px; }
-    
-    .td-followup::before { content: "Follow Up:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; }
-    
-    .td-action::before { content: "Aksi:"; font-weight: 600; color: var(--color-text-secondary); margin-right: auto; align-self: center; }
-    .td-action { flex-direction: row; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: none; }
-    
-    /* Responsive tweaks for elements inside */
-    .id-text, .date-text, .warehouse-text, .customer-name, .customer-phone, .customer-ip {
-        justify-content: flex-end;
+    .mobile-order-card .badge-process {
+        background-color: #e0f2fe !important;
+        color: #0284c7 !important;
     }
-    
-    .status-badge {
-        font-size: 0.75rem;
+
+    .mobile-order-card .badge-pending,
+    .mobile-order-card .badge-danger,
+    .mobile-order-card .badge-unpaid {
+        background-color: #fee2e2 !important;
+        color: #dc2626 !important;
+    }
+}
+
+/* Responsive Page Container */
+.orders-page-container {
+    padding: 1.5rem;
+    height: 100%;
+    overflow: auto;
+}
+
+@media (max-width: 768px) {
+    .orders-page-container {
+        padding: 0.5rem;
+        overflow-x: hidden;
     }
 }
